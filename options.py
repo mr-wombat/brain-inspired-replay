@@ -310,7 +310,7 @@ def set_defaults(args, only_MNIST=False, single_task=False, generative=True, com
             args.gamma = 1. if args.gamma is None else args.gamma
             if hasattr(args, 'dg_prop'):
                 args.dg_prop = 0.8 if args.dg_prop is None else args.dg_prop
-         if args.experiment=='splitEMNIST':
+         elif args.experiment=='splitEMNIST':
             args.xdg_prop = 0.9 if args.scenario=="task" and args.xdg_prop is None else args.xdg_prop
             args.si_c = (10. if args.scenario=='task' else 0.1) if args.si_c is None else args.si_c
             args.ewc_lambda = (
