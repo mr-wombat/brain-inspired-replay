@@ -310,6 +310,15 @@ def set_defaults(args, only_MNIST=False, single_task=False, generative=True, com
             args.gamma = 1. if args.gamma is None else args.gamma
             if hasattr(args, 'dg_prop'):
                 args.dg_prop = 0.8 if args.dg_prop is None else args.dg_prop
+         if args.experiment=='splitEMNIST':
+            args.xdg_prop = 0.9 if args.scenario=="task" and args.xdg_prop is None else args.xdg_prop
+            args.si_c = (10. if args.scenario=='task' else 0.1) if args.si_c is None else args.si_c
+            args.ewc_lambda = (
+                1000000000. if args.scenario=='task' else 100000.
+            ) if args.ewc_lambda is None else args.ewc_lambda
+            args.gamma = 1. if args.gamma is None else args.gamma
+            if hasattr(args, 'dg_prop'):
+                args.dg_prop = 0.8 if args.dg_prop is None else args.dg_prop
         elif args.experiment=='CIFAR100':
             args.xdg_prop = 0.7 if args.scenario=="task" and args.xdg_prop is None else args.xdg_prop
             args.si_c = (100. if args.scenario=='task' else 1.) if args.si_c is None else args.si_c
