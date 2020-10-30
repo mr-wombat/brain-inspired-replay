@@ -22,9 +22,14 @@ def get_dataset(name, type='train', download=True, capacity=None, permutation=No
     dataset_transform = transforms.Compose(transforms_list)
 
     # load data-set
-    dataset = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), train=False if type=='test' else True,
-                            download=download, transform=dataset_transform, target_transform=target_transform)
-
+    if name == "emnist":
+        dataset = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), split="balanced", 
+                                train=False if type=='test' else True,
+                                download=download, transform=dataset_transform, target_transform=target_transform)
+    else:
+        dataset = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), train=False if type=='test' else True,
+                                download=download, transform=dataset_transform, target_transform=target_transform) 
+    
     # if relevant, select "train" or "validation"-set from training-part of data
     # NOTE: this split assumes order of items in training-dataset is random!
     # (e.g., not first all samples from clas 1, then all samples from class 2, etc.)
