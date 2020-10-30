@@ -7,6 +7,7 @@ AVAILABLE_DATASETS = {
     'mnist': datasets.MNIST,
     'cifar10': datasets.CIFAR10,
     'cifar100': datasets.CIFAR100,
+    'emnist': datasets.EMNIST,
 }
 
 
@@ -17,6 +18,9 @@ AVAILABLE_TRANSFORMS = {
         transforms.ToTensor(),
     ],
     'mnist28': [
+        transforms.ToTensor(),
+    ],
+    'emnist': [
         transforms.ToTensor(),
     ],
     'cifar10': [
@@ -52,4 +56,5 @@ DATASET_CONFIGS = {
     'mnist28': {'size': 28, 'channels': 1, 'classes': 10},
     'cifar10': {'size': 32, 'channels': 3, 'classes': 10},
     'cifar100': {'size': 32, 'channels': 3, 'classes': 100},
+    'emnist': {'size': 28, 'channels': 1, 'classes': 10},
 }
