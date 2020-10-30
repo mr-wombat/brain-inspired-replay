@@ -79,7 +79,7 @@ def add_task_options(parser, only_MNIST=False, single_task=False, compare_code="
         task_choices = ['CIFAR10', 'CIFAR100', 'MNIST', 'MNIST28']
         task_default = 'CIFAR10'
     else:
-        MNIST_tasks = ['splitMNIST', 'permMNIST']
+        MNIST_tasks = ['splitMNIST', 'permMNIST', 'splitEMNIST']
         image_tasks = ['CIFAR100']
         task_choices = MNIST_tasks if only_MNIST else MNIST_tasks+image_tasks
         task_default = 'splitMNIST' if only_MNIST else 'CIFAR100'
