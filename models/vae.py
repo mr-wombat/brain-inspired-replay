@@ -35,6 +35,7 @@ class AutoEncoder(ContinualLearner):
         # Set configurations for setting up the model
         super().__init__()
         self.label = "VAE"
+
         self.image_size = image_size
         self.image_channels = image_channels
         self.classes = classes
@@ -78,7 +79,8 @@ class AutoEncoder(ContinualLearner):
         if fc_layers<1:
             raise ValueError("VAE cannot have 0 fully-connected layers!")
 
-
+        print("Create auto encoder with settings:")
+        print("\r\n".join([str(t[0]) + ": " + str(t[1]) for t in self.__dict__.items()]))
         ######------SPECIFY MODEL------######
 
         ##>----Encoder (= q[z|x])----<##
