@@ -128,7 +128,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
             active_classes = [list(range(classes_per_task*i, classes_per_task*(i+1))) for i in range(task)]
         elif scenario=="class":
             # -for "class"-scenario, create one <list> with active classes of all tasks so far
-            active_classes = list(range(classes_per_task*task))
+            active_classes = list(range(task+1)) # we add one class per task (t1: 0, 1 (2cl), t1: 0, 2 (3cl), ... )
 
         # Reinitialize the model's parameters (if requested)
         if reinit:
@@ -225,7 +225,9 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
                         task_used.append(x_temp_[2])
                 else:
                     # -which classes are allowed to be generated? (relevant if conditional generator / decoder-gates)
-                    allowed_classes = None if scenario=="domain" else list(range(classes_per_task*(task-1)))
+                    # the sequence always starts with 0 and increments by 1 (0,1, 0,2, 0,3,...)
+                    # task is: 1, 2, 3, 4, 5 so we want 0, 2, 3, 4, 5,... samples
+                    allowed_classes = None if scenario=="domain" else list(range(0 if task < 2 else task))
                     # -which tasks/domains are allowed to be generated? (only relevant if "Domain-IL" with task-gates)
                     allowed_domains = list(range(task))
                     # -generate inputs representative of previous tasks
@@ -244,7 +246,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
                     # -if replay does not need to be evaluated for each task (ie, not Task-IL and no task-specific mask)
                     with torch.no_grad():
                         all_scores_ = previous_model.classify(x_, not_hidden=False if Generative else True)
-                    scores_ = all_scores_[:, :(classes_per_task*(task-1))] if (
+                    scores_ = all_scores_[:, :(0 if task < 2 else task)] if (
                             scenario=="class"
                     ) else all_scores_ # -> when scenario=="class", zero probs will be added in [loss_fn_kd]-function
                     # -also get the 'hard target'
@@ -270,7 +272,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
                             #       this can be used as trick to run the Task-IL scenario with singlehead output layer
                             temp_scores_ = all_scores_
                         else:
-                            temp_scores_ = all_scores_[:, (classes_per_task*task_id):(classes_per_task*(task_id+1))]
+                            temp_scores_ = all_scores_[:, (task_id+2 if task_id > 0 else 0):((task_id+3 if task_id > 0 else 2))]
                         scores_.append(temp_scores_)
                         # - also get hard target
                         _, temp_y_ = torch.max(temp_scores_, dim=1)
@@ -329,7 +331,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
                         if sample_cb is not None:
                             sample_cb(model, batch_index, task=task, allowed_classes=None if (
                                     scenario=="domain"
-                            ) else list(range(classes_per_task*task)))
+                            ) else list(range(2+(task-1))))
 
 
             #---> Train GENERATOR
@@ -350,7 +352,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
                     if sample_cb is not None:
                         sample_cb(generator, batch_index, task=task, allowed_classes=None if (
                                     scenario=="domain"
-                            ) else list(range(classes_per_task*task)))
+                            ) else list(range(2+(task-1))))
 
 
         # Close progres-bar(s)
@@ -366,7 +368,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="task", rnt=Non
             # -find allowed classes
             allowed_classes = list(
                 range(classes_per_task*(task-1), classes_per_task*task)
-            ) if scenario=="task" else (list(range(classes_per_task*task)) if scenario=="class" else None)
+            ) if scenario=="task" else (list(range(2+(task-1))) if scenario=="class" else None)
             # -if needed, apply correct task-specific mask
             if model.mask_dict is not None:
                 model.apply_XdGmask(task=task)
